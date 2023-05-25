@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgres: 
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    environment:
+       - POSTGRES_DB=soltinho
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=88658710
+
+volumes:
+    postgres_data:
