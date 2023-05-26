@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/VictorOliveiraPy/configs"
-	"github.com/VictorOliveiraPy/internal/infra/webserver/handlers"
+	"github.com/VictorOliveiraPy/internal/infra/web/handlers"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-migrate/migrate"
