@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/VictorOliveiraPy/internal/dto"
+	"github.com/VictorOliveiraPy/internal/entity"
+
 	db "github.com/VictorOliveiraPy/internal/infra/database"
 	"github.com/go-chi/jwtauth"
 )
@@ -60,7 +62,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !u.ValidatePasswordUser(user.Password) {
+	if u.ValidatePassword(u.Password) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -73,7 +75,6 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)
 }
-
 
 // Create user godoc
 // @Summary      Create user
@@ -91,7 +92,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&request)
 
-	user, err := db.NewUser(
+	user, err := entity.NewUser(
 		request.Name, request.Email,
 		request.Phone, request.AcademyName,
 		request.InstructorBelt, request.Password,

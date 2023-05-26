@@ -24,3 +24,9 @@ WHERE id = $1;
 SELECT *
 FROM users
 WHERE email = $1;
+
+
+
+-- name: Createstudent :exec
+INSERT INTO students (id, user_id, name, age, graduation, attendance, absences, payment, email, password)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);

@@ -16,7 +16,6 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 
 	httpSwagger "github.com/swaggo/http-swagger"
-
 )
 
 func createMigrationDatabase() {
@@ -57,7 +56,6 @@ func createMigrationDatabase() {
 
 }
 
-
 // @title           Soltinho JJ
 // @version         1.0
 // @description     Soltinho API with auhtentication
@@ -93,7 +91,6 @@ func main() {
 	userDb := handlers.NewUserHandler(dbConn)
 
 	r := chi.NewRouter()
-
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))

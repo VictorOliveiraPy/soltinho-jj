@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func TestUser_WhenCreatingNewUser_ThenAllFieldsShouldBeSet(t *testing.T) {
 	// Test implementation...
 	user := db.User{
@@ -39,21 +38,18 @@ func TestUser_WhenCreatingNewUser_ThenAllFieldsShouldBeSet(t *testing.T) {
 	assert.Equal(t, "Black Belt", user.InstructorBelt)
 }
 
-	
 func TestStudent_WhenCreatingNewStudent_ThenAllFieldsShouldBeSet(t *testing.T) {
 	// Test implementation...
 	user := db.Student{
-		ID:             "123",
-		Name:           "John Doe",
-		Age: 			23,
-		Email:          "john@example.com",
-		Graduation:      "white",
-		Attendance:       sql.NullInt32{Int32: 2},
-		Absences:         sql.NullInt32{Int32: 2},
-		Payment:           true,
-		Password:       "password",
-		
-
+		ID:         "123",
+		Name:       "John Doe",
+		Age:        23,
+		Email:      "john@example.com",
+		Graduation: "white",
+		Attendance: sql.NullInt32{Int32: 2},
+		Absences:   sql.NullInt32{Int32: 2},
+		Payment:    true,
+		Password:   "password",
 	}
 
 	// Test individual fields

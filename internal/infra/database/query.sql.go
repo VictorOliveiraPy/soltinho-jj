@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :exec
@@ -37,13 +38,47 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const createstudent = `-- name: Createstudent :exec
+INSERT INTO students (id, user_id, name, age, graduation, attendance, absences, payment, email, password)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+`
+
+type CreatestudentParams struct {
+	ID         string
+	UserID     sql.NullString
+	Name       string
+	Age        int32
+	Graduation string
+	Attendance sql.NullInt32
+	Absences   sql.NullInt32
+	Payment    bool
+	Email      string
+	Password   string
+}
+
+func (q *Queries) Createstudent(ctx context.Context, arg CreatestudentParams) error {
+	_, err := q.db.ExecContext(ctx, createstudent,
+		arg.ID,
+		arg.UserID,
+		arg.Name,
+		arg.Age,
+		arg.Graduation,
+		arg.Attendance,
+		arg.Absences,
+		arg.Payment,
+		arg.Email,
+		arg.Password,
+	)
+	return err
+}
+
 const findByEmail = `-- name: FindByEmail :one
 SELECT id, name, email, phone, academy_name, instructor_belt, password
 FROM users
 WHERE email = $1
 `
 
-func (q *Queries) FindByEmail(ctx context.Context, email string) (*User, error) {
+func (q *Queries) FindByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRowContext(ctx, findByEmail, email)
 	var i User
 	err := row.Scan(
@@ -55,7 +90,7 @@ func (q *Queries) FindByEmail(ctx context.Context, email string) (*User, error) 
 		&i.InstructorBelt,
 		&i.Password,
 	)
-	return &i, err
+	return i, err
 }
 
 const getusers = `-- name: Getusers :one
