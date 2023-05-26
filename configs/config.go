@@ -1,12 +1,9 @@
 package configs
 
 import (
-	"github.com/spf13/viper"
 	"github.com/go-chi/jwtauth"
+	"github.com/spf13/viper"
 )
-
-
-
 
 type configs struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
@@ -22,7 +19,7 @@ type configs struct {
 }
 
 func LoadConfig(path string) (*configs, error) {
-	
+
 	var cfg *configs
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")

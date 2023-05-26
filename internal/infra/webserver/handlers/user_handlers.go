@@ -12,20 +12,15 @@ import (
 	"github.com/go-chi/jwtauth"
 )
 
-
 type UserHandler struct {
-	 userDB *sql.DB
-	 *db.Queries
-	 Jwt *jwtauth.JWTAuth
-
-	}
-
-
+	userDB *sql.DB
+	*db.Queries
+	Jwt *jwtauth.JWTAuth
+}
 
 type Error struct {
 	Message string `json:"message"`
 }
-	
 
 func NewUserHandler(dbConn *sql.DB) *UserHandler {
 	return &UserHandler{
@@ -33,8 +28,6 @@ func NewUserHandler(dbConn *sql.DB) *UserHandler {
 		Queries: db.New(dbConn),
 	}
 }
-
-
 
 func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -56,9 +49,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	println(u.Password)
-	if !u.ValidatePasswordUser(u.Password) {
-		println("to aqui porra %s", u.Password)
+	if !u.ValidatePasswordUser(user.Password) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -72,8 +63,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(accessToken)
 }
 
-
-func (h *UserHandler)CreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	var request dto.UserDto
 
@@ -81,12 +71,12 @@ func (h *UserHandler)CreateUser(w http.ResponseWriter, r *http.Request) {
 	println(request.Name, request.Phone)
 
 	user, err := db.NewUser(
-		 	request.Name, request.Email,
-		 	request.Phone, request.AcademyName,
-		  	request.InstructorBelt, request.Password,
-		)
+		request.Name, request.Email,
+		request.Phone, request.AcademyName,
+		request.InstructorBelt, request.Password,
+	)
 
-	if err!= nil {
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		err := Error{Message: err.Error()}
 		json.NewEncoder(w).Encode(err)
@@ -109,5 +99,5 @@ func (h *UserHandler)CreateUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(err)
 		return
 	}
-	
+
 }
