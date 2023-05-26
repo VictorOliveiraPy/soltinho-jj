@@ -29,6 +29,17 @@ func NewUserHandler(dbConn *sql.DB) *UserHandler {
 	}
 }
 
+// GetJWT godoc
+// @Summary      Get a user JWT
+// @Description  Get a user JWT
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request   body     dto.GetJWTInput  true  "user credentials"
+// @Success      200  {object}  dto.GetJWTOutput
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
+// @Router       /users/generate_token [post]
 func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
@@ -63,12 +74,22 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(accessToken)
 }
 
+
+// Create user godoc
+// @Summary      Create user
+// @Description  Create user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request     body      dto.UserDto  true  "user request"
+// @Success      201
+// @Failure      500         {object}  Error
+// @Router       /users [post]
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	var request dto.UserDto
 
 	json.NewDecoder(r.Body).Decode(&request)
-	println(request.Name, request.Phone)
 
 	user, err := db.NewUser(
 		request.Name, request.Email,
