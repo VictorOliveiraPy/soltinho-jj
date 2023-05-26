@@ -76,6 +76,9 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
+	r.Use(middleware.WithValue("JwtExperesIn",configs.JwtExperesIn))
+
 
 	r.Post("/users", userDb.CreateUser)
 	r.Post("/users/generate_token", userDb.GetJWT)

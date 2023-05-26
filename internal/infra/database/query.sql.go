@@ -43,7 +43,7 @@ FROM users
 WHERE email = $1
 `
 
-func (q *Queries) FindByEmail(ctx context.Context, email string) (User, error) {
+func (q *Queries) FindByEmail(ctx context.Context, email string) (*User, error) {
 	row := q.db.QueryRowContext(ctx, findByEmail, email)
 	var i User
 	err := row.Scan(
@@ -55,7 +55,7 @@ func (q *Queries) FindByEmail(ctx context.Context, email string) (User, error) {
 		&i.InstructorBelt,
 		&i.Password,
 	)
-	return i, err
+	return &i, err
 }
 
 const getusers = `-- name: Getusers :one
@@ -145,3 +145,4 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 	)
 	return err
 }
+

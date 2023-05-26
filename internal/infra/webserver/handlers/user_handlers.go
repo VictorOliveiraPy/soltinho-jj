@@ -10,7 +10,6 @@ import (
 	"github.com/VictorOliveiraPy/internal/dto"
 	db "github.com/VictorOliveiraPy/internal/infra/database"
 	"github.com/go-chi/jwtauth"
-	"github.com/google/uuid"
 )
 
 
@@ -48,8 +47,8 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	u, err := handler.Queries.FindByEmail(ctx, user.Email)
 
+	u, err := handler.Queries.FindByEmail(ctx, user.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		err := Error{Message: err.Error()}
@@ -57,12 +56,12 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-	if !u.ValidatePasswordUser(user.Password) {
+	println(u.Password)
+	if !u.ValidatePasswordUser(u.Password) {
+		println("to aqui porra %s", u.Password)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	println("cheguei aqui")
 	_, tokenString, _ := jwt.Encode(map[string]interface{}{
 		"sub": u.ID,
 		"exp": time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
@@ -80,14 +79,28 @@ func (h *UserHandler)CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&request)
 	println(request.Name, request.Phone)
-	err := h.Queries.CreateUser(ctx, db.CreateUserParams{
-		ID:             uuid.New().String(),
-		Name:           request.Name,
-		Email:          request.Email,
-		Phone:          request.Phone,
-		AcademyName:    request.AcademyName,
-		InstructorBelt: request.InstructorBelt,
-		Password:       request.Password,
+
+	user, err := db.NewUser(
+		 	request.Name, request.Email,
+		 	request.Phone, request.AcademyName,
+		  	request.InstructorBelt, request.Password,
+		)
+
+	if err!= nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		err := Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+
+	err = h.Queries.CreateUser(ctx, db.CreateUserParams{
+		ID:             user.ID,
+		Name:           user.Name,
+		Email:          user.Email,
+		Phone:          user.Phone,
+		AcademyName:    user.AcademyName,
+		InstructorBelt: user.InstructorBelt,
+		Password:       user.Password,
 	})
 
 	if err != nil {
