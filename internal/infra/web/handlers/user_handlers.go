@@ -44,9 +44,9 @@ func NewUserHandler(dbConn *sql.DB) *UserHandler {
 // @Router       /users/generate_token [post]
 func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
+
 	var user dto.GetJWTInput
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -54,7 +54,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := handler.Queries.FindByEmail(ctx, user.Email)
+	u, err := handler.Queries.GetUserByEmail(ctx, user.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		err := Error{Message: err.Error()}
@@ -62,7 +62,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if u.ValidatePassword(u.Password) {
+	if !u.ValidatePassword(user.Password) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -88,16 +88,11 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 // @Router       /users [post]
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	var request dto.UserDto
+	var request dto.User
 
 	json.NewDecoder(r.Body).Decode(&request)
 
-	user, err := entity.NewUser(
-		request.Name, request.Email,
-		request.Phone, request.AcademyName,
-		request.InstructorBelt, request.Password,
-	)
-
+	user, err := entity.NewUser(request.Username, request.Password, request.Email, request.RoleID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		err := Error{Message: err.Error()}
@@ -106,13 +101,12 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Queries.CreateUser(ctx, db.CreateUserParams{
-		ID:             user.ID,
-		Name:           user.Name,
-		Email:          user.Email,
-		Phone:          user.Phone,
-		AcademyName:    user.AcademyName,
-		InstructorBelt: user.InstructorBelt,
-		Password:       user.Password,
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.UserName,
+		Password: user.Password,
+		RoleID:   user.RoleID,
+		Active:   user.Active,
 	})
 
 	if err != nil {

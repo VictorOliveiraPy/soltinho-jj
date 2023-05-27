@@ -75,6 +75,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		configs.DBHost,
 		configs.DBPort,
@@ -87,8 +88,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer dbConn.Close()
-
 	userDb := handlers.NewUserHandler(dbConn)
+	gymDb := handlers.NewGymHandler(dbConn)
+	studentdb := handlers.NewStudentHandler(dbConn)
 
 	r := chi.NewRouter()
 
@@ -99,8 +101,19 @@ func main() {
 	r.Post("/users", userDb.CreateUser)
 	r.Post("/users/generate_token", userDb.GetJWT)
 
+	r.Post("/gyms", gymDb.CreateGym)
+
+
+	r.Post("/students", studentdb.Createstudent)
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 
 	http.ListenAndServe(":8000", r)
 
+}
+
+func LogRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.Method, r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
 }

@@ -1,13 +1,12 @@
 package dto
 
-type UserDto struct {
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Phone          string `json:"phone"`
-	AcademyName    string `json:"academy_name"`
-	InstructorBelt string `json:"instructor_belt"`
-	Password       string `json:"-"`
+type User struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"-"`
+	Email    string `json:"email"`
+	RoleID   string `json:"role_id"`
+	Active   bool   `json:"active"`
 }
 
 type GetJWTInput struct {
