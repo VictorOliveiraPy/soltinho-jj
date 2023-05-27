@@ -4,29 +4,35 @@
 
 package db
 
-import (
-	"database/sql"
-)
+import ()
+
+type Gym struct {
+	ID       string
+	UserID   string
+	GymName  string
+	TeamName string
+	Active   bool
+}
 
 type Student struct {
-	ID         string
-	UserID     sql.NullString
-	Name       string
-	Age        int32
-	Graduation string
-	Attendance sql.NullInt32
-	Absences   sql.NullInt32
-	Payment    bool
-	Email      string
-	Password   string
+	ID           string
+	GymID        string
+	Name         string
+	Graduation   string
+	Active       bool
+	TrainingTime string
 }
 
 type User struct {
-	ID             string
-	Name           string
-	Email          string
-	Phone          string
-	AcademyName    string
-	InstructorBelt string
-	Password       string
+	ID       string
+	Username string
+	Password string
+	Email    string
+	RoleID   string
+	Active   bool
+}
+
+type UserRole struct {
+	ID   string
+	Name string
 }
