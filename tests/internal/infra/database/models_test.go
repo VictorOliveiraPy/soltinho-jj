@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"testing"
 
 	db "github.com/VictorOliveiraPy/internal/infra/database"
@@ -9,57 +8,53 @@ import (
 )
 
 func TestUser_WhenCreatingNewUser_ThenAllFieldsShouldBeSet(t *testing.T) {
-	// Test implementation...
 	user := db.User{
 		ID:             "123",
-		Name:           "John Doe",
+		Username: 		"John Doe",
 		Email:          "john@example.com",
-		Phone:          "123456789",
-		AcademyName:    "Example Academy",
-		InstructorBelt: "Black Belt",
 		Password:       "password",
+		Active: true,
+		RoleID: "1",
 	}
 
 	// Test individual fields
 	assert.Equal(t, "123", user.ID)
-	assert.Equal(t, "John Doe", user.Name)
+	assert.Equal(t, "John Doe", user.Username)
 	assert.Equal(t, "john@example.com", user.Email)
-	assert.Equal(t, "123456789", user.Phone)
-	assert.Equal(t, "Example Academy", user.AcademyName)
-	assert.Equal(t, "Black Belt", user.InstructorBelt)
 	assert.Equal(t, "password", user.Password)
+	assert.Equal(t, true, user.Active)
 
-	// Test JSON tags
-	assert.Equal(t, "123", user.ID)
-	assert.Equal(t, "John Doe", user.Name)
-	assert.Equal(t, "john@example.com", user.Email)
-	assert.Equal(t, "123456789", user.Phone)
-	assert.Equal(t, "Example Academy", user.AcademyName)
-	assert.Equal(t, "Black Belt", user.InstructorBelt)
 }
 
 func TestStudent_WhenCreatingNewStudent_ThenAllFieldsShouldBeSet(t *testing.T) {
-	// Test implementation...
 	user := db.Student{
 		ID:         "123",
+		GymID: "123",
 		Name:       "John Doe",
-		Age:        23,
-		Email:      "john@example.com",
 		Graduation: "white",
-		Attendance: sql.NullInt32{Int32: 2},
-		Absences:   sql.NullInt32{Int32: 2},
-		Payment:    true,
-		Password:   "password",
+		Active: true,
+		TrainingTime: "1",
 	}
 
 	// Test individual fields
 	assert.Equal(t, "123", user.ID)
 	assert.Equal(t, "John Doe", user.Name)
-	assert.Equal(t, "john@example.com", user.Email)
-	assert.Equal(t, "password", user.Password)
+	assert.Equal(t, true, user.Active)
+	assert.Equal(t, "1", user.TrainingTime)
+}
 
-	// Test JSON tags
-	assert.Equal(t, "123", user.ID)
-	assert.Equal(t, "John Doe", user.Name)
-	assert.Equal(t, "john@example.com", user.Email)
+func TestGym_WhenCreatingNewSGym_ThenAllFieldsShouldBeSet(t *testing.T) {
+	gym := db.Gym{
+		ID:         "123",
+        GymName:       "academia go",
+		TeamName:  "GF_TEAM",
+        Active: true,
+	}
+
+	// Test individual fields
+	assert.Equal(t, "123", gym.ID)
+	assert.Equal(t, "academia go", gym.GymName)
+	assert.Equal(t, "GF_TEAM", gym.TeamName)
+	assert.Equal(t, true, gym.Active)
+
 }
