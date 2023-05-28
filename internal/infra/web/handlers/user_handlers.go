@@ -35,10 +35,8 @@ func NewUserHandler(dbConn *sql.DB) *UserHandler {
 
 
 func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
-
 	var user dto.GetJWTInput
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -46,7 +44,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := handler.Queries.GetUserByEmail(ctx, user.Email)
+	u, err := handler.Queries.GetUserByEmail(context.Background(), user.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		err := Error{Message: err.Error()}

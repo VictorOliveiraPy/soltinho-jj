@@ -10,6 +10,7 @@ import (
 	"github.com/VictorOliveiraPy/internal/infra/web/handlers"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth"
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -18,24 +19,8 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-func createMigrationDatabase() {
-	configs, err := configs.LoadConfig(".")
-	if err != nil {
-		log.Fatal(err)
-	}
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		configs.DBHost,
-		configs.DBPort,
-		configs.DBUser,
-		configs.DBPassword,
-		configs.DBName)
-	dbConn, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer dbConn.Close()
-
-	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
+func createMigrationDatabase(db *sql.DB) {
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,25 +73,31 @@ func main() {
 		log.Fatal(err)
 	}
 	defer dbConn.Close()
+
 	userDb := handlers.NewUserHandler(dbConn)
 	gymDb := handlers.NewGymHandler(dbConn)
 	studentdb := handlers.NewStudentHandler(dbConn)
 
 	r := chi.NewRouter()
-
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
 	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
+
+
+	r.Route("/users", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(configs.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Get("/{id}", userDb.GetUserFullProfile)
+	})
 
 	r.Post("/users", userDb.CreateUser)
 	r.Post("/users/generate_token", userDb.GetJWT)
 
-	r.Post("/gyms", gymDb.CreateGym)
-
-
 	r.Post("/students", studentdb.Createstudent)
-	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 
+	r.Post("/gyms", gymDb.CreateGym)
+	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 	http.ListenAndServe(":8000", r)
 
 }
