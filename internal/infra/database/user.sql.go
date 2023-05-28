@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :exec
@@ -67,6 +68,53 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 		&i.Email,
 		&i.RoleID,
 		&i.Active,
+	)
+	return i, err
+}
+
+const getUserCompleteProfile = `-- name: GetUserCompleteProfile :one
+SELECT u.id, u.username, u.email, u.role_id, u.active,
+       g.id AS gym_id, g.gym_name, g.team_name, g.active AS gym_active,
+       s.id AS student_id, s.graduation, s.active AS student_active, s.training_time
+FROM users u
+LEFT JOIN gyms g ON u.id = g.user_id
+LEFT JOIN students s ON g.id = s.gym_id
+WHERE u.id = $1
+`
+
+type GetUserCompleteProfileRow struct {
+	ID            string
+	Username      string
+	Email         string
+	RoleID        string
+	Active        bool
+	GymID         sql.NullString
+	GymName       sql.NullString
+	TeamName      sql.NullString
+	GymActive     sql.NullBool
+	StudentID     sql.NullString
+	Graduation    sql.NullString
+	StudentActive sql.NullBool
+	TrainingTime  sql.NullString
+}
+
+func (q *Queries) GetUserCompleteProfile(ctx context.Context, id string) (GetUserCompleteProfileRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserCompleteProfile, id)
+	var i GetUserCompleteProfileRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.RoleID,
+		&i.Active,
+		&i.GymID,
+		&i.GymName,
+		&i.TeamName,
+		&i.GymActive,
+		&i.StudentID,
+		&i.Graduation,
+		&i.StudentActive,
+		&i.TrainingTime,
 	)
 	return i, err
 }
