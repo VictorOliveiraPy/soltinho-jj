@@ -9,12 +9,12 @@ import (
 
 func TestUser_WhenCreatingNewUser_ThenAllFieldsShouldBeSet(t *testing.T) {
 	user := db.User{
-		ID:             "123",
-		Username: 		"John Doe",
-		Email:          "john@example.com",
-		Password:       "password",
-		Active: true,
-		RoleID: "1",
+		ID:       "123",
+		Username: "John Doe",
+		Email:    "john@example.com",
+		Password: "password",
+		Active:   true,
+		RoleID:   "1",
 	}
 
 	// Test individual fields
@@ -28,11 +28,11 @@ func TestUser_WhenCreatingNewUser_ThenAllFieldsShouldBeSet(t *testing.T) {
 
 func TestStudent_WhenCreatingNewStudent_ThenAllFieldsShouldBeSet(t *testing.T) {
 	user := db.Student{
-		ID:         "123",
-		GymID: "123",
-		Name:       "John Doe",
-		Graduation: "white",
-		Active: true,
+		ID:           "123",
+		GymID:        "123",
+		Name:         "John Doe",
+		Graduation:   "white",
+		Active:       true,
 		TrainingTime: "1",
 	}
 
@@ -45,10 +45,10 @@ func TestStudent_WhenCreatingNewStudent_ThenAllFieldsShouldBeSet(t *testing.T) {
 
 func TestGym_WhenCreatingNewSGym_ThenAllFieldsShouldBeSet(t *testing.T) {
 	gym := db.Gym{
-		ID:         "123",
-        GymName:       "academia go",
-		TeamName:  "GF_TEAM",
-        Active: true,
+		ID:       "123",
+		GymName:  "academia go",
+		TeamName: "GF_TEAM",
+		Active:   true,
 	}
 
 	// Test individual fields
