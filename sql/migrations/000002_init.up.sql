@@ -12,7 +12,7 @@ CREATE TABLE users (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE, -- Campo "email" como único
     role_id VARCHAR(36) NOT NULL,
     active BOOLEAN NOT NULL DEFAULT true,
     FOREIGN KEY (role_id) REFERENCES user_roles(id)
@@ -22,7 +22,7 @@ CREATE TABLE users (
 CREATE TABLE gyms (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
-    gym_name VARCHAR(255) NOT NULL,
+    gym_name VARCHAR(255) NOT NULL UNIQUE, -- Campo "gym_name" como único
     team_name VARCHAR(255) NOT NULL,
     active BOOLEAN NOT NULL DEFAULT true,
     FOREIGN KEY (user_id) REFERENCES users(id));
