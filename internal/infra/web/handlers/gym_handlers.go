@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -12,19 +11,9 @@ import (
 	db "github.com/VictorOliveiraPy/internal/infra/database"
 )
 
-type GymHandler struct {
-	gymDB *sql.DB
-	*db.Queries
-}
 
-func NewGymHandler(dbConn *sql.DB) *GymHandler {
-	return &GymHandler{
-		gymDB:   dbConn,
-		Queries: db.New(dbConn),
-	}
-}
 
-func (h *GymHandler) CreateGym(w http.ResponseWriter, r *http.Request) {
+func (h *EntityHandler) CreateGym(w http.ResponseWriter, r *http.Request) {
 	var gym dto.RequestGym
 
 	err := json.NewDecoder(r.Body).Decode(&gym)

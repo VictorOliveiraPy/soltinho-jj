@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -11,19 +10,8 @@ import (
 	db "github.com/VictorOliveiraPy/internal/infra/database"
 )
 
-type StudentHandler struct {
-	studentDB *sql.DB
-	*db.Queries
-}
 
-func NewStudentHandler(dbConn *sql.DB) *StudentHandler {
-	return &StudentHandler{
-		studentDB: dbConn,
-		Queries:   db.New(dbConn),
-	}
-}
-
-func (h *StudentHandler) Createstudent(w http.ResponseWriter, r *http.Request) {
+func (h *EntityHandler) Createstudent(w http.ResponseWriter, r *http.Request) {
 	var request dto.Student
 
 	err := json.NewDecoder(r.Body).Decode(&request)

@@ -81,9 +81,7 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	userDb := handlers.NewUserHandler(dbConn)
-	gymDb := handlers.NewGymHandler(dbConn)
-	studentdb := handlers.NewStudentHandler(dbConn)
+	entityHandler := handlers.NewEntityHandler(dbConn)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -94,15 +92,15 @@ func main() {
 	r.Route("/users", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(configs.TokenAuth))
 		r.Use(jwtauth.Authenticator)
-		r.Get("/{id}", userDb.GetUserFullProfile)
+		r.Get("/{id}", entityHandler.GetUserFullProfile)
 	})
 
-	r.Post("/users", userDb.CreateUser)
-	r.Post("/users/generate_token", userDb.GetJWT)
+	r.Post("/users", entityHandler.CreateUser)
+	r.Post("/users/generate_token", entityHandler.GetJWT)
 
-	r.Post("/students", studentdb.Createstudent)
+	r.Post("/students", entityHandler.Createstudent)
 
-	r.Post("/gyms", gymDb.CreateGym)
+	r.Post("/gyms", entityHandler.CreateGym)
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 	http.ListenAndServe(":8000", r)
 

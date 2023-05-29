@@ -19,24 +19,13 @@ import (
 	"github.com/go-chi/jwtauth"
 )
 
-type UserHandler struct {
-	userDB *sql.DB
-	*db.Queries
-	Jwt *jwtauth.JWTAuth
-}
-
 type Error struct {
 	Message string `json:"message"`
 }
 
-func NewUserHandler(dbConn *sql.DB) *UserHandler {
-	return &UserHandler{
-		userDB:  dbConn,
-		Queries: db.New(dbConn),
-	}
-}
 
-func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
+
+func (handler *EntityHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
 	var user dto.GetJWTInput
@@ -66,7 +55,7 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(accessToken)
 }
 
-func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *EntityHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	logger.Info("New user creation initiated",
 		zap.String("route", "/create-user"),
 	)
@@ -116,7 +105,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *UserHandler) GetUserFullProfile(w http.ResponseWriter, r *http.Request) {
+func (h *EntityHandler) GetUserFullProfile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	json.NewDecoder(r.Body).Decode(&id)
 
