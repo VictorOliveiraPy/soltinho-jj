@@ -5,12 +5,10 @@ POST http://localhost:8000/users
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "email": "johndoe@example.com",
-  "phone": "1234567890",
-  "academy_name": "Example Academy",
-  "instructor_belt": "Black Belt",
-  "password": "123456"
+  "username": "John Doe",
+  "email": "victorh@example.com",
+  "password": "123456",
+  "role_id": "2"
 }
 
 ### 
@@ -18,6 +16,39 @@ POST http://localhost:8000/users/generate_token
 Content-Type: application/json
 
 {
+   "id": "035f3887-403e-4c29-a2bc-1a66fe346291",
    "email": "johndoe@example.com",
    "password": "123456"
 }
+
+
+###
+POST http://localhost:8000/gyms
+Content-Type: application/json
+
+
+{
+  "user_id": "2340d79f-aaac-466c-b8c5-296f729ac681",
+  "gym_name": "Academy Gym",
+  "team_name": "Team A"
+}
+
+
+###
+
+POST http://localhost:8000/students
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUyMjI1NzUsInN1YiI6Ijk0ODc0YTJlLWFlNmItNDc0Zi05ODA2LWM4ZjI1YmJiNGUxOSJ9.YKZ5Na1KPc4vx_ZvRzaHShyEjvO4zO_ejXnlRrqyfOk
+
+{
+  "gym_id": "d5d59ffe-46f2-431f-969c-607d56afba93",
+  "gym_name": "GF TEAM",
+  "graduation": "Branca",
+  "training_time": "19 anos",
+  "user_id": "b5d189e3-8270-4c03-9329-9de73ab7e1bb"
+}
+
+###
+
+GET http://localhost:8000/users/035f3887-403e-4c29-a2bc-1a66fe346291 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUyODYzMzcsInN1YiI6IjAzNWYzODg3LTQwM2UtNGMyOS1hMmJjLTFhNjZmZTM0NjI5MSJ9.5XPhzlgk7nV5ADz28rOBMRRUhCgeuiV77MN8TEyDPIs
