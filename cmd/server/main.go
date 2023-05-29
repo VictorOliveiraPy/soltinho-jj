@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/VictorOliveiraPy/configs"
+	"github.com/VictorOliveiraPy/internal/infra/logger"
 	"github.com/VictorOliveiraPy/internal/infra/web/handlers"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -56,9 +57,12 @@ func createMigrationDatabase(db *sql.DB) {
 // @in header
 // @name Authorization
 func main() {
+	logger.Info("About to start user application")
+
 	configs, err := configs.LoadConfig(".")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error loading .env file")
+		return
 	}
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
@@ -70,7 +74,10 @@ func main() {
 
 	dbConn, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf(
+			"Error trying to connect to database, error=%s \n",
+			err.Error())
+		return
 	}
 	defer dbConn.Close()
 
@@ -83,7 +90,6 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
 	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
-
 
 	r.Route("/users", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(configs.TokenAuth))
@@ -100,11 +106,4 @@ func main() {
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 	http.ListenAndServe(":8000", r)
 
-}
-
-func LogRequest(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.Method, r.URL.Path)
-		next.ServeHTTP(w, r)
-	})
 }
