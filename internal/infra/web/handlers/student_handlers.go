@@ -28,14 +28,11 @@ func (h *StudentHandler) Createstudent(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		BadRequestHandler(w, err)
 		return
 	}
 
-	println("ate aqui cheguei1")
-	_ , err = h.Queries.GetGymByID(context.Background(), request.GymID)
+	_, err = h.Queries.GetGymByID(context.Background(), request.GymID)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		err := Error{Message: err.Error()}
@@ -60,9 +57,7 @@ func (h *StudentHandler) Createstudent(w http.ResponseWriter, r *http.Request) {
 
 	new_student, err := entity.NewStudent(request.GymID, request.GymName, request.Graduation, request.TrainingTime)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		BadRequestHandler(w, err)
 		return
 	}
 
@@ -72,13 +67,11 @@ func (h *StudentHandler) Createstudent(w http.ResponseWriter, r *http.Request) {
 		Name:         new_student.GymName,
 		Graduation:   new_student.Graduation,
 		TrainingTime: new_student.TrainingTime,
-		Active: new_student.Active,
+		Active:       new_student.Active,
 	})
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		BadRequestHandler(w, err)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)

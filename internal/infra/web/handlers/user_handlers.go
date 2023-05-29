@@ -6,10 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/VictorOliveiraPy/internal/dto"
 	"github.com/VictorOliveiraPy/internal/entity"
+	"github.com/VictorOliveiraPy/internal/infra/logger"
+	"go.uber.org/zap"
 
 	db "github.com/VictorOliveiraPy/internal/infra/database"
 	"github.com/go-chi/chi/v5"
@@ -33,22 +36,19 @@ func NewUserHandler(dbConn *sql.DB) *UserHandler {
 	}
 }
 
-
 func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
 	var user dto.GetJWTInput
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		BadRequestHandler(w, err)
 		return
 	}
 
 	u, err := handler.Queries.GetUserByEmail(context.Background(), user.Email)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		NotFoundHandler(w, err)
 		return
 	}
 
@@ -66,8 +66,10 @@ func (handler *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(accessToken)
 }
 
-
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	logger.Info("New user creation initiated",
+		zap.String("route", "/create-user"),
+	)
 	ctx := context.Background()
 	var request dto.User
 
@@ -75,18 +77,19 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	email, _ := h.Queries.GetUserByEmail(ctx, request.Email)
 
-	if email.Email != ""{
-        w.WriteHeader(http.StatusConflict)
-		fmt.Fprintf(w, "O email fornecido já está em uso.")
-
-        return
-    }
+	if email.Email != "" {
+		err := fmt.Errorf(strings.TrimRight("O email fornecido já está em uso.", "\n.,;:!?"))
+		logger.Error("Erro durante a criação do usuário", err,
+			zap.String("email", email.Email),
+		)
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
 
 	user, err := entity.NewUser(request.Username, request.Password, request.Email, request.RoleID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		logger.Error("Erro ao criar objetos de um novo usuário", err)
+		BadRequestHandler(w, err)
 		return
 	}
 
@@ -100,13 +103,16 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		logger.Error("Erro ao criar um novo usuário", err)
+		BadRequestHandler(w, err)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	logger.Info("New user created",
+		zap.String("route", "/create-user"),
+		zap.String("user_id", user.ID),
+	)
 
 }
 
@@ -120,27 +126,29 @@ func (h *UserHandler) GetUserFullProfile(w http.ResponseWriter, r *http.Request)
 	}
 
 	row, err := h.Queries.GetUserCompleteProfile(context.Background(), id)
-	if err!= nil {
-		w.WriteHeader(http.StatusNotFound)
-        err := Error{Message: err.Error()}
-        json.NewEncoder(w).Encode(err)
-        return
+	if err != nil {
+		err := fmt.Errorf(strings.TrimRight("ID fornecido Nao existe.", "\n.,;:!?"))
+		logger.Error("ID fornecido Nao existe.", err,
+			zap.String("ID", id),
+		)
+		NotFoundHandler(w, err)
+		return
 	}
 
 	dtoResponse := dto.UserCompleteProfile{
-		ID:           row.ID,
-		Username:     row.Username,
-		Email:        row.Email,
-		RoleID:       row.RoleID,
-		Active:       row.Active,
-		GymID:        row.GymID,
-		GymName:        sql.NullString{String: row.GymName.String, Valid: row.GymName.Valid},
-		TeamName:       sql.NullString{String: row.TeamName.String, Valid: row.TeamName.Valid},
-		GymActive:      sql.NullBool{Bool: row.GymActive.Bool, Valid: row.GymActive.Valid},
-		StudentID:      sql.NullString{String: row.StudentID.String, Valid: row.StudentID.Valid},
-		Graduation:     sql.NullString{String: row.Graduation.String, Valid: row.Graduation.Valid},
-		StudentActive:  sql.NullBool{Bool: row.StudentActive.Bool, Valid: row.StudentActive.Valid},
-		TrainingTime:   sql.NullString{String: row.TrainingTime.String, Valid: row.TrainingTime.Valid},
+		ID:            row.ID,
+		Username:      row.Username,
+		Email:         row.Email,
+		RoleID:        row.RoleID,
+		Active:        row.Active,
+		GymID:         row.GymID,
+		GymName:       sql.NullString{String: row.GymName.String, Valid: row.GymName.Valid},
+		TeamName:      sql.NullString{String: row.TeamName.String, Valid: row.TeamName.Valid},
+		GymActive:     sql.NullBool{Bool: row.GymActive.Bool, Valid: row.GymActive.Valid},
+		StudentID:     sql.NullString{String: row.StudentID.String, Valid: row.StudentID.Valid},
+		Graduation:    sql.NullString{String: row.Graduation.String, Valid: row.Graduation.Valid},
+		StudentActive: sql.NullBool{Bool: row.StudentActive.Bool, Valid: row.StudentActive.Valid},
+		TrainingTime:  sql.NullString{String: row.TrainingTime.String, Valid: row.TrainingTime.Valid},
 	}
 
 	w.Header().Set("Content-Type", "application/json")

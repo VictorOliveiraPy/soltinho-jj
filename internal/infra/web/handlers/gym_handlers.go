@@ -29,18 +29,14 @@ func (h *GymHandler) CreateGym(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&gym)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		BadRequestHandler(w, err)
 		return
 	}
 
 	role, err := h.Queries.GetUserRoleName(context.Background(), gym.UserID)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		NotFoundHandler(w, err)
 		return
 	}
 
@@ -54,9 +50,7 @@ func (h *GymHandler) CreateGym(w http.ResponseWriter, r *http.Request) {
 	gymNew, err := entity.NewGym(gym.UserID, gym.GymName, gym.TeamName)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		BadRequestHandler(w, err)
 		return
 	}
 
@@ -68,9 +62,7 @@ func (h *GymHandler) CreateGym(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		err := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(err)
+		BadRequestHandler(w, err)
 		return
 	}
 
