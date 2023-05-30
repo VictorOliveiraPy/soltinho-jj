@@ -23,8 +23,6 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-
-
 func (handler *EntityHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)

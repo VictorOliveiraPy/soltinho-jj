@@ -10,7 +10,6 @@ import (
 	db "github.com/VictorOliveiraPy/internal/infra/database"
 )
 
-
 func (h *EntityHandler) Createstudent(w http.ResponseWriter, r *http.Request) {
 	var request dto.Student
 

@@ -1,7 +1,8 @@
 package handlers
 
-import ("database/sql"
-db "github.com/VictorOliveiraPy/internal/infra/database"
+import (
+	"database/sql"
+	db "github.com/VictorOliveiraPy/internal/infra/database"
 )
 
 type EntityHandler struct {

@@ -13,7 +13,7 @@ CREATE TABLE users (
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE, -- Campo "email" como único
-    role_id VARCHAR(36) NOT NULL,
+    role_id VARCHAR(36) NOT NULL DEFAULT '3',
     active BOOLEAN NOT NULL DEFAULT true,
     FOREIGN KEY (role_id) REFERENCES user_roles(id)
 );

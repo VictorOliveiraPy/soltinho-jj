@@ -6,7 +6,7 @@ Content-Type: application/json
 
 {
   "username": "John Doe",
-  "email": "victorh@example.com",
+  "email": "victorhn@example.com",
   "password": "123456",
   "role_id": "2"
 }
@@ -28,8 +28,8 @@ Content-Type: application/json
 
 
 {
-  "user_id": "2340d79f-aaac-466c-b8c5-296f729ac681",
-  "gym_name": "Academy Gym",
+  "user_id": "9a561caa-d239-403f-9dca-eb53676ae179",
+  "gym_name": "GF T",
   "team_name": "Team A"
 }
 
@@ -52,3 +52,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUyMjI1N
 
 GET http://localhost:8000/users/035f3887-403e-4c29-a2bc-1a66fe346291 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUyODYzMzcsInN1YiI6IjAzNWYzODg3LTQwM2UtNGMyOS1hMmJjLTFhNjZmZTM0NjI5MSJ9.5XPhzlgk7nV5ADz28rOBMRRUhCgeuiV77MN8TEyDPIs
+
+
+###
+
+GET http://localhost:8000/gyms/2ea246fd-698c-48a5-a403-32f7c2bc7d21 HTTP/1.1
+
+
+###
+
+GET http://localhost:8000/gyms
