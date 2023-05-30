@@ -34,6 +34,56 @@ func (q *Queries) CreateGym(ctx context.Context, arg CreateGymParams) error {
 	return err
 }
 
+const getAllGyms = `-- name: GetAllGyms :many
+SELECT id, user_id, gym_name, team_name, active FROM gyms
+`
+
+func (q *Queries) GetAllGyms(ctx context.Context) ([]Gym, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGyms)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Gym
+	for rows.Next() {
+		var i Gym
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.GymName,
+			&i.TeamName,
+			&i.Active,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getByGymName = `-- name: GetByGymName :one
+SELECT id, user_id, gym_name, team_name, active FROM gyms WHERE gym_name = $1 LIMIT 1
+`
+
+func (q *Queries) GetByGymName(ctx context.Context, gymName string) (Gym, error) {
+	row := q.db.QueryRowContext(ctx, getByGymName, gymName)
+	var i Gym
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.GymName,
+		&i.TeamName,
+		&i.Active,
+	)
+	return i, err
+}
+
 const getGymByID = `-- name: GetGymByID :one
 SELECT id, user_id, gym_name, team_name, active
 FROM gyms

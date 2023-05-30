@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -122,24 +121,8 @@ func (h *EntityHandler) GetUserFullProfile(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	dtoResponse := dto.UserCompleteProfile{
-		ID:            row.ID,
-		Username:      row.Username,
-		Email:         row.Email,
-		RoleID:        row.RoleID,
-		Active:        row.Active,
-		GymID:         row.GymID,
-		GymName:       sql.NullString{String: row.GymName.String, Valid: row.GymName.Valid},
-		TeamName:      sql.NullString{String: row.TeamName.String, Valid: row.TeamName.Valid},
-		GymActive:     sql.NullBool{Bool: row.GymActive.Bool, Valid: row.GymActive.Valid},
-		StudentID:     sql.NullString{String: row.StudentID.String, Valid: row.StudentID.Valid},
-		Graduation:    sql.NullString{String: row.Graduation.String, Valid: row.Graduation.Valid},
-		StudentActive: sql.NullBool{Bool: row.StudentActive.Bool, Valid: row.StudentActive.Valid},
-		TrainingTime:  sql.NullString{String: row.TrainingTime.String, Valid: row.TrainingTime.Valid},
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dtoResponse)
+	json.NewEncoder(w).Encode(row)
 
 }

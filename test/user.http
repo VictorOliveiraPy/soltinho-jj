@@ -16,8 +16,8 @@ POST http://localhost:8000/users/generate_token
 Content-Type: application/json
 
 {
-   "id": "035f3887-403e-4c29-a2bc-1a66fe346291",
-   "email": "johndoe@example.com",
+   "id": "9a561caa-d239-403f-9dca-eb53676ae179",
+   "email": "victorhn@example.com",
    "password": "123456"
 }
 
@@ -50,8 +50,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUyMjI1N
 
 ###
 
-GET http://localhost:8000/users/035f3887-403e-4c29-a2bc-1a66fe346291 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUyODYzMzcsInN1YiI6IjAzNWYzODg3LTQwM2UtNGMyOS1hMmJjLTFhNjZmZTM0NjI5MSJ9.5XPhzlgk7nV5ADz28rOBMRRUhCgeuiV77MN8TEyDPIs
+GET http://localhost:8000/users/9a561caa-d239-403f-9dca-eb53676ae179 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODU0MTU5OTUsInN1YiI6IjlhNTYxY2FhLWQyMzktNDAzZi05ZGNhLWViNTM2NzZhZTE3OSJ9.sdzYrRmBqinHaeP8kVtGigauit5LeSHNN1gzT1W5q3E
 
 
 ###
