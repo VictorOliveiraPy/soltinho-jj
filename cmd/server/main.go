@@ -100,8 +100,15 @@ func main() {
 
 	r.Post("/students", entityHandler.Createstudent)
 
+	   // Rota de health-check
+	r.Get("/health-check", func(w http.ResponseWriter, _ *http.Request) {
+        w.Write([]byte("ping pong"))
+    })
+
+
 	r.Post("/gyms", entityHandler.CreateGym)
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
+	
 	http.ListenAndServe(":8000", r)
 
 }

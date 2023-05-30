@@ -1,14 +1,21 @@
 version: '3'
 services:
-  postgres: 
+  go-app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  postgres:
     image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     restart: always
     environment:
-       - POSTGRES_DB=soltinho
-       - POSTGRES_USER=postgres
-       - POSTGRES_PASSWORD=88658710
+      - POSTGRES_DB=soltinho
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=88658710
 
 volumes:
-    postgres_data:
+  postgres_data:

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - name: server
+        image: jvictorhugo/soltinho-k8s:latest
+        envFrom:
+            - configMapRef:
+                name: my-configmap
+        resources:
+          limits:
+            memory: "32Mi"
+            cpu: "100m"
+        
+        # startup probe
+        startupProbe:
+          httpGet:
+            path: /health-check
+            port: 8000
+          periodSeconds: 10
+          failureThreshold: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health-check
+            port: 8000
+          periodSeconds: 10
+          failureThreshold: 2
+          timeoutSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /health-check
+            port: 8000
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 5
+          successThreshold: 1
+
+        ports:
+        - containerPort: 8000
