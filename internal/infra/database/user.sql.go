@@ -73,9 +73,20 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 }
 
 const getUserCompleteProfile = `-- name: GetUserCompleteProfile :one
-SELECT u.id, u.username, u.email, u.role_id, u.active,
-       g.id AS gym_id, g.gym_name, g.team_name, g.active AS gym_active,
-       s.id AS student_id, s.graduation, s.active AS student_active, s.training_time
+SELECT
+    u.id AS "ID",
+    u.username AS "Username",
+    u.email AS "Email",
+    u.role_id AS "RoleID",
+    u.active AS "Active",
+    g.id AS "GymID",
+    g.gym_name AS "GymName",
+    g.team_name AS "TeamName",
+    g.active AS "GymActive",
+    s.id AS "StudentID",
+    s.graduation AS "Graduation",
+    s.active AS "StudentActive",
+    s.training_time AS "TrainingTime"
 FROM users u
 LEFT JOIN gyms g ON u.id = g.user_id
 LEFT JOIN students s ON g.id = s.gym_id
@@ -98,6 +109,7 @@ type GetUserCompleteProfileRow struct {
 	TrainingTime  sql.NullString
 }
 
+// result: GetUserCompleteProfileRow
 func (q *Queries) GetUserCompleteProfile(ctx context.Context, id string) (GetUserCompleteProfileRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserCompleteProfile, id)
 	var i GetUserCompleteProfileRow

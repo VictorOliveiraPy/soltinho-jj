@@ -22,6 +22,17 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+// GetJWT godoc
+// @Summary      Get a user JWT
+// @Description  Get a user JWT
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request   body     dto.GetJWTInput  true  "user credentials"
+// @Success      200  {object}  dto.GetJWTOutput
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
+// @Router       /users/generate_token [post]
 func (handler *EntityHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("JwtExperesIn").(int)
@@ -52,6 +63,16 @@ func (handler *EntityHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(accessToken)
 }
 
+// Create user godoc
+// @Summary      Create user
+// @Description  Create user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request     body      dto.User  true  "user request"
+// @Success      201
+// @Failure      500         {object}  Error
+// @Router       /users [post]
 func (h *EntityHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	logger.Info("New user creation initiated",
 		zap.String("route", "/create-user"),
@@ -102,6 +123,15 @@ func (h *EntityHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Get user godoc
+// @Summary      Get user
+// @Description  Get user full profile
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Failure      500         {object}  Error
+// @Router       /users [get]
 func (h *EntityHandler) GetUserFullProfile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	json.NewDecoder(r.Body).Decode(&id)

@@ -26,7 +26,7 @@ type Student struct {
 type User struct {
 	ID       string
 	Username string
-	Password string
+	Password string `json:"-"`
 	Email    string
 	RoleID   string
 	Active   bool

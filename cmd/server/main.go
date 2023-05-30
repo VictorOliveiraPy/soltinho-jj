@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/VictorOliveiraPy/configs"
+	_ "github.com/VictorOliveiraPy/docs"
 	"github.com/VictorOliveiraPy/internal/infra/logger"
 	"github.com/VictorOliveiraPy/internal/infra/web/handlers"
 	"github.com/go-chi/chi/middleware"
@@ -51,6 +52,9 @@ func createMigrationDatabase(db *sql.DB) {
 // @contact.url    https://www.linkedin.com/in/victor-hugo-3548a915a/
 // @contact.email  oliveiravictordev@gmail.com
 
+// @license.name   Full Cycle License
+// @license.url    http://www.fullcycle.com.br
+
 // @host      localhost:8000
 // @BasePath  /
 // @securityDefinitions.apikey ApiKeyAuth
@@ -79,8 +83,8 @@ func main() {
 			err.Error())
 		return
 	}
-	createMigrationDatabase(dbConn)
 	defer dbConn.Close()
+	createMigrationDatabase(dbConn)
 
 	entityHandler := handlers.NewEntityHandler(dbConn)
 
@@ -96,6 +100,13 @@ func main() {
 		r.Get("/{id}", entityHandler.GetUserFullProfile)
 	})
 
+	r.Route("/gyms", func(r chi.Router) {
+		r.Post("/", entityHandler.CreateGym)
+		r.Get("/{id}", entityHandler.GetByGym)
+		r.Get("/", entityHandler.GetAllGyms)
+
+	})
+
 	r.Post("/users", entityHandler.CreateUser)
 	r.Post("/users/generate_token", entityHandler.GetJWT)
 
@@ -106,11 +117,7 @@ func main() {
 		w.Write([]byte("ping pong"))
 	})
 
-	r.Post("/gyms", entityHandler.CreateGym)
-	r.Get("/gyms/{id}", entityHandler.GetByGym)
-	r.Get("/gyms", entityHandler.GetAllGyms)
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
-
 	http.ListenAndServe(":8000", r)
 
 }
