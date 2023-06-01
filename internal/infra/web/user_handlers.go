@@ -4,7 +4,6 @@ import (
 	//"context"
 	//"database/sql"
 	"encoding/json"
-	"fmt"
 
 	//"fmt"
 	"net/http"
@@ -185,6 +184,11 @@ func NewWebUserHandler(userService *service.UserService) *WebUserHandler {
 
 // }
 
+func handleConflictError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusConflict)
+	w.Write([]byte(err.Error()))
+}
+
 
 func (h *WebUserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var dto usecase.UserInputDTO
@@ -196,10 +200,15 @@ func (h *WebUserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err = h.UserService.CreateUser(r.Context(), dto)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		if e, ok := err.(service.EmailAlreadyExistsError); ok {
+			handleConflictError(w, e)
+			return
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintf(w, "Usuário criado com sucesso")
+	w.Write([]byte("Usuário criado com sucesso"))
 }

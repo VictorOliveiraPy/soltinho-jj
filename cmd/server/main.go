@@ -98,7 +98,7 @@ func main() {
 	// Criação da instância do WebUserHandler
 	userRepository := db.NewUserRepository(dbConn)
 	createUserUseCase := usecase.NewCreateUserUseCase(userRepository)
-	userService := service.NewUserService(*createUserUseCase)
+	userService := service.NewUserService(*createUserUseCase, userRepository)
 	webUserHandler := web.NewWebUserHandler(userService)
 
 
