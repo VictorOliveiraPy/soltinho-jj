@@ -8,11 +8,15 @@ import (
 
 	"github.com/VictorOliveiraPy/configs"
 	_ "github.com/VictorOliveiraPy/docs"
+	"github.com/VictorOliveiraPy/internal/infra/db"
 	"github.com/VictorOliveiraPy/internal/infra/logger"
-	"github.com/VictorOliveiraPy/internal/infra/web/handlers"
+	"github.com/VictorOliveiraPy/internal/infra/web"
+	"github.com/VictorOliveiraPy/internal/service"
+	"github.com/VictorOliveiraPy/internal/usecase"
+
+	_ "github.com/VictorOliveiraPy/internal/infra/web"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth"
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -86,7 +90,19 @@ func main() {
 	defer dbConn.Close()
 	createMigrationDatabase(dbConn)
 
-	entityHandler := handlers.NewEntityHandler(dbConn)
+	//entityHandler := handlers.NewEntityHandler(dbConn)
+		// Criação do caso de uso CreateUserUseCase
+
+		// Criação do manipulador WebUserHandler
+
+	// Criação da instância do WebUserHandler
+	userRepository := db.NewUserRepository(dbConn)
+	createUserUseCase := usecase.NewCreateUserUseCase(userRepository)
+	userService := service.NewUserService(*createUserUseCase)
+	webUserHandler := web.NewWebUserHandler(userService)
+
+
+
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -94,23 +110,20 @@ func main() {
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
 	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
 
-	r.Route("/users", func(r chi.Router) {
-		r.Use(jwtauth.Verifier(configs.TokenAuth))
-		r.Use(jwtauth.Authenticator)
-		r.Get("/{id}", entityHandler.GetUserFullProfile)
-	})
+	
 
-	r.Route("/gyms", func(r chi.Router) {
-		r.Post("/", entityHandler.CreateGym)
-		r.Get("/{id}", entityHandler.GetByGym)
-		r.Get("/", entityHandler.GetAllGyms)
+	// r.Route("/gyms", func(r chi.Router) {
+	// 	r.Post("/", entityHandler.CreateGym)
+	// 	r.Get("/{id}", entityHandler.GetByGym)
+	// 	r.Get("/", entityHandler.GetAllGyms)
 
-	})
+	// })
 
-	r.Post("/users", entityHandler.CreateUser)
-	r.Post("/users/generate_token", entityHandler.GetJWT)
+	//r.Post("/users", entityHandler.CreateUser)
+	//r.Post("/users/generate_token", entityHandler.GetJWT)
 
-	r.Post("/students", entityHandler.Createstudent)
+	r.Post("/users", webUserHandler.Create)
+	//r.Post("/students", entityHandler.Createstudent)
 
 	// Rota de health-check
 	r.Get("/health-check", func(w http.ResponseWriter, _ *http.Request) {

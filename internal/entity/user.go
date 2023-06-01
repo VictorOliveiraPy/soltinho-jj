@@ -8,10 +8,10 @@ import (
 type User struct {
 	ID       string `json:"id"`
 	UserName string `json:"username"`
-	Password string `json:"-"`
+	Password string `json:"password"`
 	Email    string `json:"email"`
-	RoleID   string `json:"role_id"`
-	Active   bool   `json:"active"`
+    RoleID   string `json:"role_id"`
+	Active   bool 	`json:"active"`
 }
 
 func NewUser(user_name string, password string, email string, role_id string) (*User, error) {
