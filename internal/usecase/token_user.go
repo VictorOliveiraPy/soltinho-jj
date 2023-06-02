@@ -48,8 +48,8 @@ func (u *GetTokenUseCase) GetUserToken(jwt *jwtauth.JWTAuth, jwtExpiresIn int, i
 	}
 
 	_, tokenString, _ := jwt.Encode(map[string]interface{}{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
+		"user": user.ID,
+		"exp":  time.Now().Add(time.Second * time.Duration(jwtExpiresIn)).Unix(),
 	})
 
 	return GetJWTOutput{AccessToken: tokenString}, nil

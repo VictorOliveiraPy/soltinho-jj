@@ -37,15 +37,29 @@ func (repo *UserRepository) FindByEmail(email string) (*entity.User, error) {
 
 	err := row.Scan(&user.ID, &user.UserName, &user.Password, &user.Email, &user.RoleID, &user.Active)
 	if err != nil {
-		println("aqui")
 		if err == sql.ErrNoRows {
-			println("aqui2")
 			return nil, nil
 		}
-		println("aqui 3")
 		fmt.Println(err)
 		return nil, err
 	}
 
 	return &user, nil
+}
+
+func (repo *UserRepository) FindById(id string) (*entity.User, error) {
+	query := "SELECT id, username, password, email, role_id, active FROM users WHERE id = $1"
+	row := repo.Db.QueryRow(query, id)
+	var user entity.User
+
+	err := row.Scan(&user.ID, &user.UserName, &user.Password, &user.Email, &user.RoleID, &user.Active)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &user, nil
+
 }

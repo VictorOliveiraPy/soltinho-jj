@@ -30,8 +30,13 @@ func NewUser(user_name string, password string, email string, role_id string) (*
 	}, nil
 }
 
-func (u *User) IsAdminOrInstructor(name_role string) bool {
-	return name_role == "admin" || name_role == "instructor"
+func (u *User) IsAuthorizedRole(roleID string) bool {
+	allowedRoles := map[string]bool{
+		"1": true,
+		"2": true,
+	}
+	_, ok := allowedRoles[roleID]
+	return ok
 }
 
 func (u *User) ValidatePassword(password string) bool {

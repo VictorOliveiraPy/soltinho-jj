@@ -1,6 +1,8 @@
 package errors
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type EmailNotFound struct {
 	Email string
@@ -26,3 +28,20 @@ func (e EmailAlreadyExistsError) Error() string {
 	return fmt.Sprintf("o email '%s' já está em uso", e.Email)
 }
 
+type UnauthorizedError struct{}
+
+func (e UnauthorizedError) Error() string {
+	return "Usuário não autorizado"
+}
+
+func ErrUnauthorized() error {
+	return UnauthorizedError{}
+}
+
+type GymNameAlreadyExistsError struct {
+	GymName string
+}
+
+func (e GymNameAlreadyExistsError) Error() string {
+	return fmt.Sprintf("O nome da academia '%s' já existe", e.GymName)
+}

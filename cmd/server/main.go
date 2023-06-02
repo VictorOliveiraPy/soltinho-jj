@@ -17,6 +17,7 @@ import (
 	_ "github.com/VictorOliveiraPy/internal/infra/web"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth"
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -88,23 +89,34 @@ func main() {
 		return
 	}
 	defer dbConn.Close()
-	userRepository := db.NewUserRepository(dbConn)
-	createUserUseCase := usecase.NewCreateUserUseCase(userRepository)
-	getTokenUseCase := usecase.GetTokenUserUseCase(userRepository)
-
-	userService := service.NewUserService(*createUserUseCase, userRepository)
-	webUserHandler := web.NewWebUserHandler(userService, (*usecase.GetTokenUseCase)(getTokenUseCase))
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
 	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
+	gymRepository := db.NewGymRepository(dbConn)
+
+	userRepository := db.NewUserRepository(dbConn)
+	createUserUseCase := usecase.NewCreateUserUseCase(userRepository)
+	createGymUseCase := usecase.NewCreaGymUseCase(gymRepository)
+	getTokenUseCase := usecase.GetTokenUserUseCase(userRepository)
+
+	userService := service.NewUserService(*createUserUseCase, userRepository)
+	webUserHandler := web.NewWebUserHandler(userService, (*usecase.GetTokenUseCase)(getTokenUseCase))
+
+	gymService := service.NewGymService(*createGymUseCase, gymRepository, userRepository)
+	webGymHandler := web.NewWebGymHandler(gymService, configs.TokenAuth)
+
+	r.Route("/gyms", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(configs.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", webGymHandler.Create)
+	})
 
 	r.Post("/users/generate_token", webUserHandler.GetJWT)
 
 	r.Post("/users", webUserHandler.Create)
-
 	r.Get("/health-check", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("ping pong"))
 	})
