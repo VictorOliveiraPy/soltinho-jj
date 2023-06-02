@@ -46,11 +46,11 @@ func (h *WebUserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, err := h.UseCase.GetUserToken(jwt, jwtExpiresIn, dto)
 	if e, ok := err.(errors.EmailNotFound); ok {
-		http.Error(w, e.Error(), http.StatusNotFound)
+		errors.HandleNotFoundError(w, e)
 		return
 	}
 	if e, ok := err.(errors.PasswordInvalid); ok {
-		http.Error(w, e.Error(), http.StatusUnauthorized)
+		errors.HandleUnauthorizedError(w, e)
 		return
 	}
 
@@ -63,7 +63,7 @@ func (h *WebUserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var dto usecase.UserInputDTO
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		errors.HandleBadRequestError(w, err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (h *WebUserHandler) Create(w http.ResponseWriter, r *http.Request) {
 			errors.HandleConflictError(w, e)
 			return
 		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			errors.HandleInternalServerError(w, err)
 			return
 		}
 	}

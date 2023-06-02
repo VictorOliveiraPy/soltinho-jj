@@ -25,3 +25,4 @@ type EmailAlreadyExistsError struct {
 func (e EmailAlreadyExistsError) Error() string {
 	return fmt.Sprintf("o email '%s' já está em uso", e.Email)
 }
+
