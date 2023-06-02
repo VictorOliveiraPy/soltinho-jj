@@ -10,8 +10,8 @@ type User struct {
 	UserName string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
-    RoleID   string `json:"role_id"`
-	Active   bool 	`json:"active"`
+	RoleID   string `json:"role_id"`
+	Active   bool   `json:"active"`
 }
 
 func NewUser(user_name string, password string, email string, role_id string) (*User, error) {
@@ -30,6 +30,11 @@ func NewUser(user_name string, password string, email string, role_id string) (*
 	}, nil
 }
 
-func IsAdminOrInstructor(name_role string) bool {
+func (u *User) IsAdminOrInstructor(name_role string) bool {
 	return name_role == "admin" || name_role == "instructor"
+}
+
+func (u *User) ValidatePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
 }

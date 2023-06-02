@@ -5,27 +5,19 @@ import (
 	"fmt"
 
 	"github.com/VictorOliveiraPy/internal/entity"
+	"github.com/VictorOliveiraPy/internal/errors"
 	"github.com/VictorOliveiraPy/internal/usecase"
 )
 
-
-type EmailAlreadyExistsError struct {
-	Email string
-}
-
-func (e EmailAlreadyExistsError) Error() string {
-	return fmt.Sprintf("o email '%s' já está em uso", e.Email)
-}
-
 type UserService struct {
 	CreateUserUseCase usecase.CreateUserUseCase
-	userRepository entity.UserRepositoryInterface
+	userRepository    entity.UserRepositoryInterface
 }
 
 func NewUserService(createUserUseCase usecase.CreateUserUseCase, userRepository entity.UserRepositoryInterface) *UserService {
 	return &UserService{
 		CreateUserUseCase: createUserUseCase,
-		userRepository: userRepository,
+		userRepository:    userRepository,
 	}
 }
 
@@ -35,15 +27,13 @@ func (s *UserService) checkEmailExists(email string) error {
 		return err
 	}
 	if existingUser != nil {
-		return EmailAlreadyExistsError{Email: email}
+		return errors.EmailAlreadyExistsError{Email: email}
 	}
 	return nil
 }
 
-
-func (s *UserService) CreateUser(ctx context.Context,dto usecase.UserInputDTO) error {
+func (s *UserService) CreateUser(ctx context.Context, dto usecase.UserInputDTO) error {
 	if err := s.checkEmailExists(dto.Email); err != nil {
-		println(err.Error())
 		return err
 	}
 

@@ -7,7 +7,6 @@ import (
 	"github.com/VictorOliveiraPy/internal/entity"
 )
 
-
 type UserRepository struct {
 	Db *sql.DB
 }
@@ -30,7 +29,6 @@ func (repo *UserRepository) Create(user *entity.User) error {
 	}
 	return nil
 }
-
 
 func (repo *UserRepository) FindByEmail(email string) (*entity.User, error) {
 	query := "SELECT id, username, password, email, role_id, active FROM users WHERE email = $1"

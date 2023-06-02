@@ -88,21 +88,12 @@ func main() {
 		return
 	}
 	defer dbConn.Close()
-	createMigrationDatabase(dbConn)
-
-	//entityHandler := handlers.NewEntityHandler(dbConn)
-		// Criação do caso de uso CreateUserUseCase
-
-		// Criação do manipulador WebUserHandler
-
-	// Criação da instância do WebUserHandler
 	userRepository := db.NewUserRepository(dbConn)
 	createUserUseCase := usecase.NewCreateUserUseCase(userRepository)
+	getTokenUseCase := usecase.GetTokenUserUseCase(userRepository)
+
 	userService := service.NewUserService(*createUserUseCase, userRepository)
-	webUserHandler := web.NewWebUserHandler(userService)
-
-
-
+	webUserHandler := web.NewWebUserHandler(userService, (*usecase.GetTokenUseCase)(getTokenUseCase))
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -110,22 +101,10 @@ func main() {
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
 	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
 
-	
-
-	// r.Route("/gyms", func(r chi.Router) {
-	// 	r.Post("/", entityHandler.CreateGym)
-	// 	r.Get("/{id}", entityHandler.GetByGym)
-	// 	r.Get("/", entityHandler.GetAllGyms)
-
-	// })
-
-	//r.Post("/users", entityHandler.CreateUser)
-	//r.Post("/users/generate_token", entityHandler.GetJWT)
+	r.Post("/users/generate_token", webUserHandler.GetJWT)
 
 	r.Post("/users", webUserHandler.Create)
-	//r.Post("/students", entityHandler.Createstudent)
 
-	// Rota de health-check
 	r.Get("/health-check", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("ping pong"))
 	})

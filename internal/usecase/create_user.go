@@ -1,7 +1,6 @@
 package usecase
 
 import (
-
 	"github.com/VictorOliveiraPy/internal/entity"
 )
 
@@ -13,8 +12,6 @@ type UserInputDTO struct {
 	RoleID   string `json:"role_id"`
 	Active   bool   `json:"active"`
 }
-
-
 
 type UserOutputDTO struct {
 	ID       string `json:"id"`
@@ -37,10 +34,9 @@ func NewCreateUserUseCase(
 	}
 }
 
-
 func (c *CreateUserUseCase) Execute(input UserInputDTO) error {
 	user := entity.User{
-		ID: input.ID,
+		ID:       input.ID,
 		UserName: input.Username,
 		Password: input.Password,
 		Email:    input.Email,
@@ -48,10 +44,11 @@ func (c *CreateUserUseCase) Execute(input UserInputDTO) error {
 		Active:   input.Active,
 	}
 
-	err := c.UserRepository.Create(&user); if err != nil {
+	err := c.UserRepository.Create(&user)
+	if err != nil {
 		return err
 	}
-	
+
 	return nil
 
 }
