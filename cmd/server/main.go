@@ -96,23 +96,36 @@ func main() {
 	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
 	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
 	gymRepository := db.NewGymRepository(dbConn)
+	studentRepository := db.NewStudentRepository(dbConn)
 
 	userRepository := db.NewUserRepository(dbConn)
 	createUserUseCase := usecase.NewCreateUserUseCase(userRepository)
+	createStudentUseCase := usecase.NewCreaStudentUseCase(studentRepository)
+
 	createGymUseCase := usecase.NewCreaGymUseCase(gymRepository)
 	getTokenUseCase := usecase.GetTokenUserUseCase(userRepository)
 
 	userService := service.NewUserService(*createUserUseCase, userRepository)
 	webUserHandler := web.NewWebUserHandler(userService, (*usecase.GetTokenUseCase)(getTokenUseCase))
 
+	studentService := service.NewStudentService(*createStudentUseCase, studentRepository,userRepository )
+
 	gymService := service.NewGymService(*createGymUseCase, gymRepository, userRepository)
 	webGymHandler := web.NewWebGymHandler(gymService, configs.TokenAuth)
+	webStudentHandler := web.NewWebStudentHandler(studentService, configs.TokenAuth)
 
 	r.Route("/gyms", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(configs.TokenAuth))
 		r.Use(jwtauth.Authenticator)
 		r.Post("/", webGymHandler.Create)
 	})
+
+	r.Route("/students", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(configs.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", webStudentHandler.Create)
+	})
+
 
 	r.Post("/users/generate_token", webUserHandler.GetJWT)
 

@@ -7,17 +7,17 @@ import (
 type Student struct {
 	ID           string `json:"id"`
 	GymID        string `json:"gym_id"`
-	GymName      string `json:"gym_name"`
+	Name         string `json:"name"`
 	Graduation   string `json:"graduation"`
 	Active       bool   `json:"active"`
 	TrainingTime string `json:"training_time"`
 }
 
-func NewStudent(gymID string, gym_name string, graduation string, trainingTime string) (*Student, error) {
+func NewStudent(gymID string, Name string, graduation string, trainingTime string) (*Student, error) {
 	return &Student{
 		ID:           uuid.New().String(),
 		GymID:        gymID,
-		GymName:      gym_name,
+		Name:      	  Name,
 		Graduation:   graduation,
 		Active:       true,
 		TrainingTime: trainingTime,

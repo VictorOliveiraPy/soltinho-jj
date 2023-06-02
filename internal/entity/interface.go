@@ -10,3 +10,7 @@ type GymRepositoryInterface interface {
 	Create(gym *Gym) error
 	FindByName(id string) (*Gym, error)
 }
+
+type StudentRepositoryInterface interface {
+	Create(student *Student) error
+}
