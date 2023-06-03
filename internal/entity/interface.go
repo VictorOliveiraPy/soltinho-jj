@@ -8,7 +8,8 @@ type UserRepositoryInterface interface {
 
 type GymRepositoryInterface interface {
 	Create(gym *Gym) error
-	FindByName(id string) (*Gym, error)
+	FindByName(gym_name string) (*Gym, error)
+	FindById(id string) (*Gym, error)
 }
 
 type StudentRepositoryInterface interface {

@@ -6,7 +6,6 @@ import (
 	"github.com/VictorOliveiraPy/internal/entity"
 )
 
-
 type StudentRepository struct {
 	Db *sql.DB
 }

@@ -17,7 +17,7 @@ func NewStudent(gymID string, Name string, graduation string, trainingTime strin
 	return &Student{
 		ID:           uuid.New().String(),
 		GymID:        gymID,
-		Name:      	  Name,
+		Name:         Name,
 		Graduation:   graduation,
 		Active:       true,
 		TrainingTime: trainingTime,

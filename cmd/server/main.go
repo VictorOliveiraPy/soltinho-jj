@@ -108,7 +108,7 @@ func main() {
 	userService := service.NewUserService(*createUserUseCase, userRepository)
 	webUserHandler := web.NewWebUserHandler(userService, (*usecase.GetTokenUseCase)(getTokenUseCase))
 
-	studentService := service.NewStudentService(*createStudentUseCase, studentRepository,userRepository )
+	studentService := service.NewStudentService(*createStudentUseCase, studentRepository, userRepository, gymRepository)
 
 	gymService := service.NewGymService(*createGymUseCase, gymRepository, userRepository)
 	webGymHandler := web.NewWebGymHandler(gymService, configs.TokenAuth)
@@ -125,7 +125,6 @@ func main() {
 		r.Use(jwtauth.Authenticator)
 		r.Post("/", webStudentHandler.Create)
 	})
-
 
 	r.Post("/users/generate_token", webUserHandler.GetJWT)
 

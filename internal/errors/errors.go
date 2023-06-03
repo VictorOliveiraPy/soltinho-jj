@@ -45,3 +45,11 @@ type GymNameAlreadyExistsError struct {
 func (e GymNameAlreadyExistsError) Error() string {
 	return fmt.Sprintf("O nome da academia '%s' já existe", e.GymName)
 }
+
+type GymNotFoundError struct {
+	GymID string
+}
+
+func (e GymNotFoundError) Error() string {
+	return fmt.Sprintf("Gym not found with ID: %s", e.GymID)
+}

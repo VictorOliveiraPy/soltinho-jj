@@ -10,16 +10,15 @@ import (
 	"github.com/go-chi/jwtauth"
 )
 
-
 type WebStudentHandler struct {
 	StudentService *service.StudentService
-	TokenAuth  *jwtauth.JWTAuth
+	TokenAuth      *jwtauth.JWTAuth
 }
 
 func NewWebStudentHandler(studentService *service.StudentService, tokenAuth *jwtauth.JWTAuth) *WebStudentHandler {
 	return &WebStudentHandler{
 		StudentService: studentService,
-		TokenAuth:  tokenAuth,
+		TokenAuth:      tokenAuth,
 	}
 }
 
@@ -39,6 +38,10 @@ func (h *WebStudentHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if e, ok := err.(errors.UnauthorizedError); ok {
 			errors.HandleUnauthorizedError(w, e)
+			return
+		}
+		if e, ok := err.(errors.GymNotFoundError); ok {
+			errors.HandleNotFoundError(w, e)
 			return
 		} else {
 			errors.HandleInternalServerError(w, err)

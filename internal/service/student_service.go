@@ -12,17 +12,27 @@ import (
 type StudentService struct {
 	CreateStudentUseCase usecase.CreateStudentUseCase
 	StudentRepository    entity.StudentRepositoryInterface
-	userRepository   entity.UserRepositoryInterface
+	userRepository       entity.UserRepositoryInterface
+	gymRepository        entity.GymRepositoryInterface
 }
 
-func NewStudentService(createStudentUseCase usecase.CreateStudentUseCase, StudentRepository entity.StudentRepositoryInterface, userRepository entity.UserRepositoryInterface) *StudentService {
+func NewStudentService(createStudentUseCase usecase.CreateStudentUseCase, StudentRepository entity.StudentRepositoryInterface, userRepository entity.UserRepositoryInterface,
+	gymRepository entity.GymRepositoryInterface) *StudentService {
 	return &StudentService{
 		CreateStudentUseCase: createStudentUseCase,
 		StudentRepository:    StudentRepository,
-		userRepository:   userRepository,
+		userRepository:       userRepository,
+		gymRepository:        gymRepository,
 	}
 }
 
+func (s *StudentService) CheckGymExistence(gymID string) error {
+	gym, _ := s.gymRepository.FindById(gymID)
+	if gym != nil {
+		return errors.GymNotFoundError{GymID: gymID}
+	}
+	return nil
+}
 
 func (s *StudentService) CheckUserRole(userID string) error {
 	role, err := s.userRepository.FindById(userID)
@@ -39,7 +49,12 @@ func (s *StudentService) CheckUserRole(userID string) error {
 }
 
 func (s *StudentService) CreateStudent(ctx context.Context, dto usecase.StudentInput, userID string) error {
-	err := s.CheckUserRole(userID)
+	err := s.CheckGymExistence(dto.GymID)
+	if err != nil {
+		return err
+	}
+
+	err = s.CheckUserRole(userID)
 	if err != nil {
 		return err
 	}
@@ -49,13 +64,12 @@ func (s *StudentService) CreateStudent(ctx context.Context, dto usecase.StudentI
 		return fmt.Errorf("erro ao criar novo usuário: %w", err)
 	}
 
-
 	err = s.CreateStudentUseCase.Execute(usecase.StudentInput{
-		ID: student.ID,
-		GymID: student.GymID,
-		Name: student.Name,
-		Graduation: student.Graduation,
-		Active: student.Active,
+		ID:           student.ID,
+		GymID:        student.GymID,
+		Name:         student.Name,
+		Graduation:   student.Graduation,
+		Active:       student.Active,
 		TrainingTime: student.TrainingTime,
 	})
 

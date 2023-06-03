@@ -42,3 +42,20 @@ func (repo *GymRepository) FindByName(gym_name string) (*entity.Gym, error) {
 
 	return &gym, nil
 }
+
+func (repo *GymRepository) FindById(id string) (*entity.Gym, error) {
+	query := "SELECT id, user_id, gym_name, team_name, active FROM gyms WHERE id = $1 LIMIT 1"
+	row := repo.Db.QueryRow(query, id)
+	var gym entity.Gym
+
+	err := row.Scan(&gym.ID, &gym.UserID, &gym.GymName, &gym.TeamName, &gym.Active)
+	if err == nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &gym, nil
+
+}
